@@ -272,7 +272,7 @@ export default function Smartphone() {
                         <th className="py-2 px-4">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                {/* <tbody>
                     {currentSmartphone.map((smartphones, index) => (
                         <RetreivePhone
                             key={index}
@@ -282,7 +282,30 @@ export default function Smartphone() {
                             onDelete={handleDeleteClick}
                         />
                     ))}
+                </tbody> */}
+                <tbody>
+                    {currentSmartphone.map((smartphones, index) => {
+                        const formattedSmartphones = {
+                            ...smartphones,
+                            brand: smartphones.brand.charAt(0).toUpperCase() + smartphones.brand.slice(1),
+                            model: smartphones.model.charAt(0).toUpperCase() + smartphones.model.slice(1),
+                            processorBrand: smartphones.processorBrand.charAt(0).toUpperCase() + smartphones.processorBrand.slice(1),
+                            os: smartphones.os.toLowerCase() === "ios"
+                            ? "iOS"
+                            : smartphones.os.charAt(0).toUpperCase() + smartphones.os.slice(1),                        };
+
+                        return (
+                            <RetreivePhone
+                                key={index}
+                                smartphones={formattedSmartphones}
+                                index={indexOfFirstSmartphone + index}
+                                onEdit={handleEditClick}
+                                onDelete={handleDeleteClick}
+                            />
+                        );
+                    })}
                 </tbody>
+
             </table>
             <div className="flex justify-center mt-4 pd-20">
                 {Array.from({ length: totalPages }, (_, index) => (
@@ -450,48 +473,21 @@ export default function Smartphone() {
                                     />
                                 )} */}
                             {/* </div> */}
-                            <div className="flex items-center gap-4">
-                                <label className="text-gray-700 text-sm font-bold">Refresh Rate:</label>
-
-                                <div className="flex gap-4">
-                                    {[60, 90, 120, 144].map((rate) => (
-                                        <label key={rate} className="inline-flex items-center">
-                                            <input
-                                                type="radio"
-                                                name="refreshRate"
-                                                value={rate}
-                                                checked={refreshRate === rate.toString()}
-                                                onChange={(e) => setRefreshRate(e.target.value)}
-                                                className="form-radio"
-                                            />
-                                            <span className="ml-2 text-gray-500">{rate} Hz</span>
-                                        </label>
-                                    ))}
-
-                                    {/* ปุ่ม Other */}
-                                    <label className="inline-flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="refreshRate"
-                                            value="Other"
-                                            checked={refreshRate === "Other"}
-                                            onChange={(e) => setRefreshRate(e.target.value)}
-                                            className="form-radio"
-                                        />
-                                        <span className="ml-2 text-gray-500">Other</span>
-                                    </label>
-
-                                    {/* ช่องกรอกค่าถ้าผู้ใช้เลือก Other */}
-                                    {refreshRate === "Other" && (
-                                        <input
-                                            type="number"
-                                            value={customRate}
-                                            onChange={(e) => setCustomRate(e.target.value)}
-                                            placeholder="Enter Hz"
-                                            className="border rounded p-1 w-24 text-gray-500"
-                                        />
-                                    )}
-                                </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="refreshRate">Refresh Rate (Hz)</label>
+                                <select
+                                    id="refreshRate"
+                                    value={selectedSmartphones.refreshRate}
+                                    onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, refreshRate: e.target.value })}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    required
+                                >
+                                    <option value="" disabled>Select a number of  Refresh Rate</option>
+                                    <option value="60">60 Hz</option>
+                                    <option value="90">90 Hz</option>
+                                    <option value="120">120 Hz</option>
+                                    <option value="144">144 Hz</option>
+                                </select>
                             </div>
 
 
@@ -568,7 +564,25 @@ export default function Smartphone() {
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="brand">Brand</label>
-                                <input type="text" id="name" value={selectedSmartphones.brand} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, brand: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                                <select
+                                    id="brand"
+                                    value={selectedSmartphones.brand}
+                                    onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, brand: e.target.value })}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    required
+                                >
+                                    <option value="" disabled>Select a brand</option>
+                                    <option value="Samsung">Samsung</option>
+                                    <option value="Apple">Apple</option>
+                                    <option value="Xiaomi">Xiaomi</option>
+                                    <option value="Oppo">Oppo</option>
+                                    <option value="Vivo">Vivo</option>
+                                    <option value="Realme">Realme</option>
+                                    <option value="OnePlus">OnePlus</option>
+                                    <option value="Asus">Asus</option>
+                                    <option value="Sony">Sony</option>
+                                    {/* <!-- เพิ่มแบรนด์อื่นๆ ที่ต้องการ --> */}
+                                </select>
                             </div>
 
                             <div className="mb-4">
@@ -578,12 +592,40 @@ export default function Smartphone() {
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">Price</label>
-                                <input type="text" id="price" value={selectedSmartphones.price} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, price: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                                <input type="number" id="price" value={selectedSmartphones.price} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, price: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="support5G">5G Support</label>
-                                <input type="text" id="support5G" value={selectedSmartphones.support5G} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, support5G: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                            <div className="flex items-center gap-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">5G Support</label>
+                                <div className="flex gap-4">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="support5G"
+                                            value="Yes"
+                                            checked={selectedSmartphones.support5G === "Yes"}
+                                            onChange={(e) =>
+                                                setSelectedSmartphones({ ...selectedSmartphones, support5G: e.target.value })
+                                            }
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2 text-gray-500">Yes</span>
+                                    </label>
+
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="support5G"
+                                            value="No"
+                                            checked={selectedSmartphones.support5G === "No"}
+                                            onChange={(e) =>
+                                                setSelectedSmartphones({ ...selectedSmartphones, support5G: e.target.value })
+                                            }
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2 text-gray-500">No</span>
+                                    </label>
+                                </div>
                             </div>
 
                             <div className="mb-4">
@@ -616,45 +658,53 @@ export default function Smartphone() {
                                 <input type="text" id="refreshRate" value={selectedSmartphones.refreshRate} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, refreshRate: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
                             </div> */}
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="refreshRate">
-                                    Refresh Rate
-                                </label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="refreshRate">Refresh Rate (Hz)</label>
                                 <select
                                     id="refreshRate"
                                     value={selectedSmartphones.refreshRate}
-                                    onChange={(e) => {
-                                        const value = e.target.value;
-                                        setSelectedSmartphones({
-                                            ...selectedSmartphones,
-                                            refreshRate: value === "Other" ? "" : value,
-                                        });
-                                    }}
-                                    className="shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
+                                    onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, refreshRate: e.target.value })}
+                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                    required
                                 >
-                                    <option value="">Select Refresh Rate</option>
+                                    <option value="" disabled>Select a number of  Refresh Rate</option>
                                     <option value="60">60 Hz</option>
                                     <option value="90">90 Hz</option>
                                     <option value="120">120 Hz</option>
                                     <option value="144">144 Hz</option>
-                                    <option value="Other">Other</option>
                                 </select>
-
-                                {selectedSmartphones.refreshRate === "" && (
-                                    <input
-                                        type="text"
-                                        placeholder="Enter custom refresh rate"
-                                        value={selectedSmartphones.refreshRate}
-                                        onChange={(e) =>
-                                            setSelectedSmartphones({ ...selectedSmartphones, refreshRate: e.target.value })
-                                        }
-                                        className="mt-2 shadow border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline"
-                                    />
-                                )}
                             </div>
 
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="os">Operating System</label>
-                                <input type="text" id="os" value={selectedSmartphones.os} onChange={(e) => setSelectedSmartphones({ ...selectedSmartphones, os: e.target.value })} className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required />
+                            <div className="flex items-center gap-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Operating System</label>
+                                <div className="flex gap-4">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="os"
+                                            value="android"
+                                            checked={selectedSmartphones.os === "android"}
+                                            onChange={(e) =>
+                                                setSelectedSmartphones({ ...selectedSmartphones, os: e.target.value })
+                                            }
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2 text-gray-500">Android</span>
+                                    </label>
+
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="os"
+                                            value="ios"
+                                            checked={selectedSmartphones.os === "ios"}
+                                            onChange={(e) =>
+                                                setSelectedSmartphones({ ...selectedSmartphones, os: e.target.value })
+                                            }
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2 text-gray-500">iOS</span>
+                                    </label>
+                                </div>
                             </div>
 
                             <ReCAPTCHA
